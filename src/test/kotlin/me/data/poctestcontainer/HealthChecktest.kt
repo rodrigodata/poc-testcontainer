@@ -1,6 +1,7 @@
 package  me.data.poctestcontainer
 
 import org.assertj.core.api.Assertions
+import org.testcontainers.containers.PostgreSQLContainer
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 import org.testcontainers.containers.GenericContainer
