@@ -13,6 +13,6 @@ chmod +x scripts/*
 ![healthcheck](./healthcheck.png)
 
 ## TODO
-[x] Estrutura inicial
-[x] Dockenizar aplicacao
-[] Implementar testcontainer 
+- [x] Estrutura inicial
+- [x] Dockenizar aplicacao
+- [] Implementar testcontainer 
