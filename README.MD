@@ -11,3 +11,8 @@ chmod +x scripts/*
 `http://localhost:8080/healthcheck`
 
 ![healthcheck](./healthcheck.png)
+
+## TODO
+[x] Estrutura inicial
+[x] Dockenizar aplicacao
+[] Implementar testcontainer 
