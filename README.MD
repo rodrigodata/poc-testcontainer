@@ -15,4 +15,4 @@ chmod +x scripts/*
 ## TODO
 - [x] Estrutura inicial
 - [x] Dockenizar aplicacao
-- [] Implementar testcontainer 
+- [ ] Implementar testcontainer 
