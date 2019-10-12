@@ -6,4 +6,8 @@ chmod +x scripts/*
 ./buildae.sh
 ```
 
-[GET]`http://localhost:8080/healthcheck`
+## E como eu acesso?
+
+`http://localhost:8080/healthcheck`
+
+![healthcheck](./healthcheck.png)
