@@ -1,4 +1,4 @@
-## Como rodar?
+## Como eu rodo?
 
 ```
 chmod +x buildae.sh
