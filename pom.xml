@@ -10,7 +10,6 @@
 	</parent>
 	<groupId>me.data</groupId>
 	<artifactId>poctestcontainer</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<name>poctestcontainer</name>
 	<description>POC utilizando testcontainer</description>
 
