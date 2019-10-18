@@ -1,30 +1,20 @@
 package  me.data.poctestcontainer
 
 import org.assertj.core.api.Assertions
-import org.junit.jupiter.api.*
-import org.testcontainers.containers.PostgreSQLContainer
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
-import org.testcontainers.containers.GenericContainer
-import org.testcontainers.containers.MySQLContainer
-import org.testcontainers.containers.output.Slf4jLogConsumer
+import org.springframework.boot.test.context.SpringBootTest
 import org.testcontainers.containers.wait.strategy.Wait
-import org.testcontainers.images.builder.ImageFromDockerfile
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
-import java.io.BufferedReader
-import java.io.File
-import java.io.InputStreamReader
-import java.net.HttpURLConnection
-import java.net.URL
-import java.nio.file.Paths
-import java.util.stream.Collectors
+import org.testcontainers.containers.MySQLContainer
+import java.sql.DriverManager
 
 @Testcontainers
-class HealthChecktest {
+class HealthChecktest : AbstractContainerDatabaseTest() {
 
     private var log = LoggerFactory.getLogger(HealthChecktest::class.java)
-
+//
 //    @Container
 //    private val healthCheckContainer: GenericContainer<Nothing> = GenericContainer<Nothing>(
 //            ImageFromDockerfile()
@@ -38,13 +28,7 @@ class HealthChecktest {
 //    }
 
     @Container
-    private val mysqlContainer = MySQLContainer<Nothing>("mysql:5.7.22").apply {
-    withDatabaseName("teste")
-        withUsername("root")
-        withPassword("root")
-        withExposedPorts(3306)
-        waitingFor(Wait.forLogMessage(".*ready for connections.*", 1))
-    }
+    private val mysqlContainer = MySQLContainer<Nothing>("mysql:5.7.22")
 
 //    @Test
 //    fun `should perform an api request healthcheck`() {
@@ -64,9 +48,30 @@ class HealthChecktest {
     @Test
     fun `should perform an query selecting records from database`() {
         try {
+
+            //TODO: Remover configuração de container dentro de teste
+            mysqlContainer.withDatabaseName("teste")
+            mysqlContainer.withUsername("testeuser")
+            mysqlContainer.withPassword("testepass")
+            mysqlContainer.withExposedPorts(3306)
+            mysqlContainer.waitingFor(Wait.forLogMessage(".*ready for connections.*", 1))
+            mysqlContainer.withCommand("--default-authentication-plugin=mysql_native_password")
             mysqlContainer.start()
+
             Assertions.assertThat(mysqlContainer.isRunning).isTrue()
-            println("Logado na base de dados ${mysqlContainer.databaseName}, com o usuario ${mysqlContainer.username} e senha ${mysqlContainer.password}.")
+            println("Container configurado -> Database ${mysqlContainer.databaseName}, com o usuario ${mysqlContainer.username} e senha ${mysqlContainer.password}.")
+
+            // Executar comando junto ao container
+            //val resultSet = performQuery(mysqlContainer, "SELECT 1")
+            println("\n\n\n\n\n\n\n\n ${mysqlContainer.jdbcUrl} \n\n\n\n\n\n\n\n ")
+            DriverManager.getConnection(mysqlContainer.jdbcUrl, mysqlContainer.username, mysqlContainer.password).use { connection ->
+                connection.createStatement().use { statement ->
+                    statement.executeQuery("SELECT 1").use { resultSet ->
+                        resultSet.next()
+                        Assertions.assertThat(resultSet.getInt(1)).isEqualTo(2)
+                    }
+                }
+            }
         } finally {
             mysqlContainer.stop()
         }
