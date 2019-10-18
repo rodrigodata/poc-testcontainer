@@ -7,9 +7,12 @@ import org.testcontainers.containers.wait.strategy.Wait
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.containers.MySQLContainer
+import java.io.File
+import java.nio.file.Paths
 import java.sql.DriverManager
 import java.util.*
 
+// TODO: mover testes que nao tratam de api para outros arquivos.
 @Testcontainers
 class HealthChecktest {
 
@@ -46,7 +49,39 @@ class HealthChecktest {
 //    }
 
     @Test
-    fun `should perform an query selecting records from database`() {
+    fun `should create table`(){
+        try {
+            mysqlContainer.waitingFor(Wait.forLogMessage(".*ready for connections.*", 1))
+            mysqlContainer.withCommand("--default-authentication-plugin=mysql_native_password")
+            mysqlContainer.start()
+
+            Assertions.assertThat(mysqlContainer.isRunning).isTrue()
+
+            DriverManager.getConnection(mysqlContainer.jdbcUrl, mysqlContainer.username, mysqlContainer.password).use { connection ->
+                connection.createStatement().use { statement ->
+                    // TODO: Mover sql para arquivo proprio
+                    val sqlCreateTable = "CREATE TABLE testando_poc (\n" +
+                            "  id int NOT NULL AUTO_INCREMENT PRIMARY KEY,\n" +
+                            "  descricao VARCHAR(50) NOT NULL\n" +
+                            ");"
+
+                    // Criamos a tabela
+                    statement.execute(sqlCreateTable)
+
+                    statement.executeQuery("SELECT 1 as tabela FROM testando_poc;").use { resultSet ->
+                        resultSet.last()
+                        Assertions.assertThat("").isEqualTo(0)
+                    }
+                }
+            }
+
+        } finally {
+            mysqlContainer.stop()
+        }
+    }
+
+    @Test
+    fun `should table size be equals 2`() {
         try {
             //TODO: Remover configuração de container dentro de teste
             // Ver issue https://github.com/testcontainers/testcontainers-java/issues/932 para iniciar container
@@ -62,15 +97,29 @@ class HealthChecktest {
 
             DriverManager.getConnection(mysqlContainer.jdbcUrl, mysqlContainer.username, mysqlContainer.password).use { connection ->
                 connection.createStatement().use { statement ->
-                    statement.executeQuery("SELECT 1").use { resultSet ->
-                        while(resultSet.next()) {
+                    // TODO: Mover sql para arquivo proprio
+                    val sqlCreateTable = "CREATE TABLE testando_poc (\n" +
+                            "  id int NOT NULL AUTO_INCREMENT PRIMARY KEY,\n" +
+                            "  descricao VARCHAR(50) NOT NULL\n" +
+                            ");"
 
+                    // Criando tabela
+                    statement.execute(sqlCreateTable)
+
+                    // Inserindo dados iniciais
+                    statement.execute("INSERT INTO testando_poc (descricao) VALUES (\"minha primeira descricao\");")
+                    statement.execute("INSERT INTO testando_poc (descricao) VALUES (\"minha segunda descricao\");")
+
+                    statement.executeQuery("SELECT * FROM testando_poc;").use { resultSet ->
+                        while(resultSet.next()) {
+                            println("Id: ${resultSet.getString("id")}")
+                            println("Descricao: ${resultSet.getString("descricao")}\n")
                         }
 
-                        println("\n\n\n\n\n\n $resultSet \n\n\n\n\n\n\n")
-
-                        // resultSet.getInt() -> pegar valor em coluna com index n
-                        Assertions.assertThat(resultSet.getInt(1)).isEqualTo(1)
+                        // move cursor para ultimo item da lista de resultados
+                        // https://stackoverflow.com/questions/192078/how-do-i-get-the-size-of-a-java-sql-resultset
+                        resultSet.last()
+                        Assertions.assertThat(resultSet.row).isEqualTo(2)
                     }
                 }
             }
