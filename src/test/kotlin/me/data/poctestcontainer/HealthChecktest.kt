@@ -3,7 +3,6 @@ package  me.data.poctestcontainer
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
-import org.springframework.boot.test.context.SpringBootTest
 import org.testcontainers.containers.wait.strategy.Wait
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
@@ -11,7 +10,7 @@ import org.testcontainers.containers.MySQLContainer
 import java.sql.DriverManager
 
 @Testcontainers
-class HealthChecktest : AbstractContainerDatabaseTest() {
+class HealthChecktest {
 
     private var log = LoggerFactory.getLogger(HealthChecktest::class.java)
 //
@@ -48,27 +47,25 @@ class HealthChecktest : AbstractContainerDatabaseTest() {
     @Test
     fun `should perform an query selecting records from database`() {
         try {
-
             //TODO: Remover configuração de container dentro de teste
-            mysqlContainer.withDatabaseName("teste")
-            mysqlContainer.withUsername("testeuser")
-            mysqlContainer.withPassword("testepass")
-            mysqlContainer.withExposedPorts(3306)
+            // Ver issue https://github.com/testcontainers/testcontainers-java/issues/932 para iniciar container
+            // com usuario e senha custom.
+            // mysqlContainer.withDatabaseName("teste")
+            // mysqlContainer.withUsername("testeuser")
+            // mysqlContainer.withPassword("testepass")
             mysqlContainer.waitingFor(Wait.forLogMessage(".*ready for connections.*", 1))
             mysqlContainer.withCommand("--default-authentication-plugin=mysql_native_password")
             mysqlContainer.start()
 
             Assertions.assertThat(mysqlContainer.isRunning).isTrue()
-            println("Container configurado -> Database ${mysqlContainer.databaseName}, com o usuario ${mysqlContainer.username} e senha ${mysqlContainer.password}.")
 
-            // Executar comando junto ao container
-            //val resultSet = performQuery(mysqlContainer, "SELECT 1")
-            println("\n\n\n\n\n\n\n\n ${mysqlContainer.jdbcUrl} \n\n\n\n\n\n\n\n ")
             DriverManager.getConnection(mysqlContainer.jdbcUrl, mysqlContainer.username, mysqlContainer.password).use { connection ->
                 connection.createStatement().use { statement ->
                     statement.executeQuery("SELECT 1").use { resultSet ->
                         resultSet.next()
-                        Assertions.assertThat(resultSet.getInt(1)).isEqualTo(2)
+                        println("\n\n\n\n\n\n $resultSet \n\n\n\n\n\n\n")
+                        // resultSet.getInt() -> pegar valor em coluna com index n
+                        Assertions.assertThat(resultSet.getInt(1)).isEqualTo(1)
                     }
                 }
             }
