@@ -8,6 +8,7 @@ import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.containers.MySQLContainer
 import java.sql.DriverManager
+import java.util.*
 
 @Testcontainers
 class HealthChecktest {
@@ -50,9 +51,9 @@ class HealthChecktest {
             //TODO: Remover configuração de container dentro de teste
             // Ver issue https://github.com/testcontainers/testcontainers-java/issues/932 para iniciar container
             // com usuario e senha custom.
-            // mysqlContainer.withDatabaseName("teste")
-            // mysqlContainer.withUsername("testeuser")
-            // mysqlContainer.withPassword("testepass")
+             //mysqlContainer.withDatabaseName("teste")
+//             mysqlContainer.withUsername("rodrigo")
+//             mysqlContainer.withPassword("data")
             mysqlContainer.waitingFor(Wait.forLogMessage(".*ready for connections.*", 1))
             mysqlContainer.withCommand("--default-authentication-plugin=mysql_native_password")
             mysqlContainer.start()
@@ -62,8 +63,12 @@ class HealthChecktest {
             DriverManager.getConnection(mysqlContainer.jdbcUrl, mysqlContainer.username, mysqlContainer.password).use { connection ->
                 connection.createStatement().use { statement ->
                     statement.executeQuery("SELECT 1").use { resultSet ->
-                        resultSet.next()
+                        while(resultSet.next()) {
+
+                        }
+
                         println("\n\n\n\n\n\n $resultSet \n\n\n\n\n\n\n")
+
                         // resultSet.getInt() -> pegar valor em coluna com index n
                         Assertions.assertThat(resultSet.getInt(1)).isEqualTo(1)
                     }
