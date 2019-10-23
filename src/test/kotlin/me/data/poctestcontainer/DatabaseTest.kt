@@ -70,28 +70,18 @@ class DatabaseTest {
                             "  descricao VARCHAR(50) NOT NULL\n" +
                             ");"
 
-                    // Criando tabela
                     statement.execute(sqlCreateTable)
-
-                    // Inserindo dados iniciais
                     statement.execute("INSERT INTO testando_poc (descricao) VALUES (\"minha primeira descricao\");")
                     statement.execute("INSERT INTO testando_poc (descricao) VALUES (\"minha segunda descricao\");")
 
                     statement.executeQuery("SELECT * FROM testando_poc;").use { resultSet ->
                         var listaDeValor = ArrayList<Any>()
                         while(resultSet.next()) {
-                            println("Id: ${resultSet.getString("id")}")
-                            println("Descricao: ${resultSet.getString("descricao")}\n")
-
                             listaDeValor.add("id:${resultSet.getString("id")},descricao:${resultSet.getString("descricao")}")
                         }
 
-                        // move cursor para ultimo item da lista de resultados
-                        // https://stackoverflow.com/questions/192078/how-do-i-get-the-size-of-a-java-sql-resultset
-                        resultSet.last()
-                        Assertions.assertThat(resultSet.row).isEqualTo(2)
-                        println(listaDeValor[0])
-                        //Assertions.assertThat()
+                        Assertions.assertThat(listaDeValor.size).isEqualTo(2)
+
                     }
                 }
             }
