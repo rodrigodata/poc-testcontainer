@@ -19,9 +19,9 @@ import java.nio.file.Paths
 import java.util.stream.Collectors
 
 @Testcontainers
-class HealthChecktest {
+class HealthCheckTest {
 
-    private var log = LoggerFactory.getLogger(HealthChecktest::class.java)
+    private var log = LoggerFactory.getLogger(HealthCheckTest::class.java)
 
     @Container
     private val healthCheckContainer: GenericContainer<Nothing> = GenericContainer<Nothing>(
