@@ -7,7 +7,7 @@ import org.springframework.test.context.junit4.SpringRunner
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
-class PoctestcontainerApplicationTests {
+class PoctestcontainerApplicationTest {
 
 	@Test
 	fun contextLoads() {
