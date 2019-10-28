@@ -10,7 +10,6 @@ import org.testcontainers.images.builder.ImageFromDockerfile
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import java.io.BufferedReader
-
 import java.io.File
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
