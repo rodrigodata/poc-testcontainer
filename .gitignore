@@ -51,3 +51,5 @@ HELP.md
 
 ### VS Code ###
 .vscode/
+
+*.iml
