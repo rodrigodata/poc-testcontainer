@@ -1,0 +1,4 @@
+CREATE TABLE testando_poc (
+  id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  descricao VARCHAR(50) NOT NULL
+);

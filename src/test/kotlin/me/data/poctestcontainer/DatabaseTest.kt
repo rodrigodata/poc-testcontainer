@@ -1,5 +1,7 @@
 package  me.data.poctestcontainer
 
+import me.data.poctestcontainer.utils.createTableScript
+import me.data.poctestcontainer.utils.insertValuesScript
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.testcontainers.containers.wait.strategy.Wait
@@ -15,7 +17,7 @@ class DatabaseTest {
     private val mysqlContainer = MySQLContainer<Nothing>("mysql:5.7.22")
 
     @Test
-    fun `should create table`(){
+    fun `should create table`() {
         try {
             //TODO: Remover configuração de container dentro de teste
             // Ver issue https://github.com/testcontainers/testcontainers-java/issues/932 para iniciar container
@@ -28,13 +30,8 @@ class DatabaseTest {
 
             DriverManager.getConnection(mysqlContainer.jdbcUrl, mysqlContainer.username, mysqlContainer.password).use { connection ->
                 connection.createStatement().use { statement ->
-                    // TODO: Mover sql para arquivo proprio
-                    val sqlCreateTable = "CREATE TABLE testando_poc (\n" +
-                            "  id int NOT NULL AUTO_INCREMENT PRIMARY KEY,\n" +
-                            "  descricao VARCHAR(50) NOT NULL\n" +
-                            ");"
 
-                    statement.execute(sqlCreateTable)
+                    statement.execute(createTableScript())
 
                     statement.executeQuery("SELECT 1 as tabela FROM testando_poc;").use { resultSet ->
                         // nesse caso, como estamos apenas criando a tabela e nao estamos inserindo nenhum dado nela
@@ -64,19 +61,13 @@ class DatabaseTest {
 
             DriverManager.getConnection(mysqlContainer.jdbcUrl, mysqlContainer.username, mysqlContainer.password).use { connection ->
                 connection.createStatement().use { statement ->
-                    // TODO: Mover sql para arquivo proprio
-                    val sqlCreateTable = "CREATE TABLE testando_poc (\n" +
-                            "  id int NOT NULL AUTO_INCREMENT PRIMARY KEY,\n" +
-                            "  descricao VARCHAR(50) NOT NULL\n" +
-                            ");"
 
-                    statement.execute(sqlCreateTable)
-                    statement.execute("INSERT INTO testando_poc (descricao) VALUES (\"minha primeira descricao\");")
-                    statement.execute("INSERT INTO testando_poc (descricao) VALUES (\"minha segunda descricao\");")
+                    statement.execute(createTableScript())
+                    statement.execute(insertValuesScript())
 
                     statement.executeQuery("SELECT * FROM testando_poc;").use { resultSet ->
                         var listaDeValor = ArrayList<Any>()
-                        while(resultSet.next()) {
+                        while (resultSet.next()) {
                             listaDeValor.add("id:${resultSet.getString("id")},descricao:${resultSet.getString("descricao")}")
                         }
 
