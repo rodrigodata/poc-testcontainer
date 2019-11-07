@@ -1,5 +1,6 @@
 package  me.data.poctestcontainer
 
+import me.data.poctestcontainer.models.Teste
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.testcontainers.containers.wait.strategy.Wait
@@ -75,11 +76,26 @@ class DatabaseTest {
                     statement.execute("INSERT INTO testando_poc (descricao) VALUES (\"minha segunda descricao\");")
 
                     statement.executeQuery("SELECT * FROM testando_poc;").use { resultSet ->
-                        var listaDeValor = ArrayList<Any>()
+                        var listaDeValor = ArrayList<Teste>()
+//                        println("\n\n")
+//                        println(resultSet)
+//                        println("\n\n")
+//                        resultSet.last()
+//                        println("\n\n")
                         while(resultSet.next()) {
-                            listaDeValor.add("id:${resultSet.getString("id")},descricao:${resultSet.getString("descricao")}")
+
+                            //var objeto: Teste = resultSet
+                            var teste = Teste()
+
+                            teste.id = resultSet.getString("id").toInt()
+                            teste.descricao = resultSet.getString("descricao")
+                            listaDeValor.add(teste)
+
                         }
 
+                        println("\n\n")
+                        println(listaDeValor.toString())
+                        println("\n\n")
                         Assertions.assertThat(listaDeValor.size).isEqualTo(2)
 
                     }
@@ -91,3 +107,5 @@ class DatabaseTest {
     }
 
 }
+
+

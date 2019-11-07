@@ -29,7 +29,7 @@ class HealthCheckTest {
                     .withFileFromPath("Dockerfile", Paths.get("./Dockerfile"))
     ).apply {
         withExposedPorts(8080)
-        waitingFor(Wait.forLogMessage(".*Started PoctestcontainerApplicationKt.*", 1))
+        waitingFor(Wait.forLogMessage(".*Started PoctestcontainerApplicationKt.*", 1)) // health check
         start()
         followOutput(Slf4jLogConsumer(log))
     }
